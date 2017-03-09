@@ -1,0 +1,12 @@
+<form method="POST" action="/">
+    <input type="text" placeholder="Username" name="username">
+    <br />
+    <input type="password" placeholder="Password" name="password">
+    <br />
+    {{#if image}}
+    <input type="text" placeholder="Code">
+    <img src="{{imageLink}}">
+    <br />
+    {{/if}}
+    <input type="submit" value="Login" />
+</form>
