@@ -1,5 +1,4 @@
-const webdriver = require('selenium-webdriver');
-let driver = new webdriver.Builder().forBrowser('chrome').build();
+let driver = module.require('./../config/selenium');
 
 module.exports = {
     loginGet: (req, res) => {
@@ -8,15 +7,23 @@ module.exports = {
         // Check if user is logged
         driver
             .findElement({ xpath: '/html/body/div[1]/div[1]/table/tbody/tr[2]/td[2]/table/tbody/tr/td[1]/a[4]'})
-            .then((element) => { // User is not logged
-                    // Check for image authentication
-                    element.click();
+            .then(() => {
+                    // Click login button
+                    driver
+                        .findElement({ xpath: '/html/body/div[1]/div[1]/table/tbody/tr[2]/td[2]/table/tbody/tr/td[1]/a[4]' })
+                        .then((element) => {
+                            element.click();
+                        }, (err) => {
+                            if (err) console.log('There is no login button!')
+                        });
 
+                    // Check for image authentication
                     driver
                         .findElement({ xpath: '//*[@id="Kf0"]/tbody/tr[1]/td[1]/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/img'})
                         .then((element) => {
                             // get image
                             let link = element.getAttribute('src');
+                            // console.log(link);
                             // render image in extension
                             res.render('user/login', { image: true, imageLink: link});
 
@@ -30,7 +37,7 @@ module.exports = {
         }, (err) => {
                 if (err) {
                     console.log('User is logged!');
-                    res.render('home/profile');
+                    res.redirect('home/profile')
                 }
             });
 
@@ -39,9 +46,10 @@ module.exports = {
         let registerArgs = req.body;
 
         // send username from the extension to neobux username field
-        driver.findElement({ xpath: '//*[@id="Kf1"]' }).sendKeys(registerArgs.username);
+        driver.findElement({ xpath: '//*[@id="Kf1"]' }).sendKeys('registerArgs.username');
+
         // send password from the extension to neobux password field
-        driver.findElement({ xpath: '//*[@id="Kf2"]' }).sendKeys(registerArgs.password);
+        driver.findElement({ xpath: '//*[@id="Kf2"]' }).sendKeys('registerArgs.password');
 
         // send image code from the extension to neobux code field
         if (registerArgs.code) driver.findElement({ xpath: '//*[@id="Kf3"]'}).sendKeys(registerArgs.code);
@@ -49,18 +57,16 @@ module.exports = {
         // click neobux login button
         driver.findElement({ xpath: '//*[@id="botao_login"]' }).click();
 
+        // check if login was successful
         driver.findElement({ xpath: '//*[@id="ubar_w1"]/tbody/tr/td[3]/a'})
             .then(() => {
                 console.log('Login successful')
             }, (err) => {
-                if (err) console.log(err)
+                if (err) {
+                    console.log('Login failed!');
+                }
             });
 
-        // open neobux advertisements page
-        driver.findElement({ xpath: '/html/body/div[1]/div[1]/table/tbody/tr[3]/td/table/tbody/tr/td[3]/a'}).click();
-
-        // render profile view in extension
-        res.render('home/profile')
-
+        driver.sleep(5000);
     }
 };
