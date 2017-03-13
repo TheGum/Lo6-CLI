@@ -13,17 +13,28 @@ module.exports = {
           .then((adPrize) => {
               adPrize.click();
 
-              driver.sleep(10000); // waiting AdPrize to loading
-              driver
-                  .findElement({ xpath: '//*[@id="nxt_bt_a"]'})
-                  .then((nextButton) => {
-                    nextButton.click();
-              }, (err) => {
-                  if (err) console.log(`Can't find or click AdPrize next button!`)
-              })
+              for (let i = 0; i <= 100; i++) {
+                  driver.getAllWindowHandles().then((handles) => { // handle new window
+                      driver.switchTo().window(handles[1]).then(() => { // switch to new window
+                          driver.sleep(13000); // loading ad
 
+                          driver // find button next
+                              .findElement({xpath: '//*[@id="nxt_bt_a"]'})
+                              .then((inAdvertise) => {
+                                  inAdvertise.click(); // click button next
+                              }, (err) => {
+                                  if (err) {
+                                      driver.sleep(5000); // if there is no next button wait 5 sec
+                                      driver // find close button
+                                          .findElement({xpath: '//*[@id="prm0"]/tbody/tr[1]/td[2]/table/tbody/tr/td[2]/a'})
+                                          .click(); // click close button
+                                      driver.switchTo().window(handles[0]); // switch to main window
 
-
+                                  }
+                              })
+                      });
+                  });
+              }
           }, (err) => {
             if (err) console.log(`Can't get the AdPrize!`)
           })
@@ -36,11 +47,13 @@ module.exports = {
             .click();
         driver.sleep(5000); // waiting for loading ads
 
+        res.render('home/profile');
+
         // Loop all ads
-        for (let i = 1; i <= 20; i++) { // this '20' need to be number of purple ads
-            res.render('home/profile');
+        for (let i = 1; i < 20; i++) { // this '20' need to be number of purple ads
+            //res.render('home/profile');
             driver
-                .findElement({ xpath: `//*[@id="desc_${i}"]` }) // Get advertisement
+                .findElement({ xpath: `//*[@id="tga_${i}"]` }) // Get advertisement
                 .then((element) => {
                     element.click(); // click on advertisement
 

@@ -46,10 +46,10 @@ module.exports = {
         let registerArgs = req.body;
 
         // send username from the extension to neobux username field
-        driver.findElement({ xpath: '//*[@id="Kf1"]' }).sendKeys('registerArgs.username');
+        driver.findElement({ xpath: '//*[@id="Kf1"]' }).sendKeys(registerArgs.username);
 
         // send password from the extension to neobux password field
-        driver.findElement({ xpath: '//*[@id="Kf2"]' }).sendKeys('registerArgs.password');
+        driver.findElement({ xpath: '//*[@id="Kf2"]' }).sendKeys(registerArgs.password);
 
         // send image code from the extension to neobux code field
         if (registerArgs.code) driver.findElement({ xpath: '//*[@id="Kf3"]'}).sendKeys(registerArgs.code);
