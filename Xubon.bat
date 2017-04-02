@@ -1,0 +1,1 @@
+.\\node.exe scripts/bot.js
